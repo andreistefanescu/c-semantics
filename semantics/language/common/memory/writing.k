@@ -224,9 +224,9 @@ module C-MEMORY-WRITING
           requires Pos <Int Len
 
      // this general rule is useful for unknowns, abstracts, etc
-     rule splitBytes(tv(N:Bits, T:Type))
+     rule splitBytes(tv(N:ObjectPart, T:Type))
           => dataList(ListItem(piece(N, cfg:bitsPerByte)))
-          requires hasCharType(T:Type) andBool (isInt(N:Bits) =/=K true)
+          requires hasCharType(T:Type)
      rule splitBytes(tv(unknown, T:Type))
           => dataList(splitUnknown(bitSizeofType(T)))
      rule splitBytes(tv(I:Int, T:Type))

@@ -1,5 +1,6 @@
 module C-DYNAMIC-SYNTAX
      syntax SimpleType // defined in C-TYPING-SYNTAX
+     syntax ExtendedMInt // defined in C-BITS-SYNTAX
      syntax Bits // defined in C-BITS-SYNTAX
      syntax SymLoc // defined in C-SYMLOC-SYNTAX
 
@@ -21,7 +22,7 @@ module C-DYNAMIC-SYNTAX
 
      syntax KItem ::= "discard"
 
-     syntax NumValue ::= Float | Bits // Int is a subsort of Bits
+     syntax NumValue ::= Float | ExtendedMInt
      syntax CValue ::= NumValue | SymLoc | Agg
      syntax C ::= NumValue | Type | RValue
 

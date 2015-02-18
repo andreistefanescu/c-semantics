@@ -1,12 +1,18 @@
 module C-BITS-SYNTAX
      imports C-SYMLOC-SYNTAX
 
-     syntax Bits ::= Int
+     syntax ExtendedMInt ::= Int
 
      syntax Trap ::= "trap"
      syntax Unknown ::= "unknown"
-     syntax Bits ::= Trap
-     syntax Bits ::= Unknown
+     syntax ExtendedMInt ::= Trap
+     syntax ExtendedMInt ::= Unknown
+
+     // object, start piece, end piece
+     syntax ObjectPart ::= subObject(SymLoc, Int, Int)
+     syntax ExtendedMInt ::= ObjectPart
+
+     syntax Bits ::= ExtendedMInt
 
      syntax Bits ::= piece(Bits, Int)
      syntax Bits ::= Bits "bit::" Bits
@@ -16,8 +22,6 @@ module C-BITS-SYNTAX
 
      // loc, size in bytes
      syntax Bits ::= encodedFloat(Float)
-     // object, start piece, end piece
-     syntax Bits ::= subObject(SymLoc, Int, Int)
 
      syntax KItem ::= fillToBytes(K) [strict]
      syntax KItem ::= "fillToBytes-aux" "(" K "," List ")" [function]
