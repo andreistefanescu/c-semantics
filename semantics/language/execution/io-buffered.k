@@ -248,40 +248,40 @@ module C-IO-BUFFERED
           <buffer> Mem:List </buffer>
           requires notBool (loc(Base, Offset) in locations(Mem))
           [structural]
-     rule <k> readByte(loc(Base:SymBase, Offset:Int), T:Type)
-               => assert(Offset:Int <Int Len:Int, errorReadOutOfBounds)
-               ~> assert((notBool (Volatile in getQualsAtOffset(ObjT, Offset)))
-                    orBool isVolatileType(T),
-                    errorNonVolatileLVal)
-               ~> tv(piece(trap, cfg:bitsPerByte), t(.Set, no-type))
-          ...</k>
-          <mem>...
-               Base |-> object(ObjT:Type, Len:Int,
-               M:Map => M[
-                     Offset <- piece(trap, cfg:bitsPerByte)])
-          ...</mem>
-          <buffer> Mem:List </buffer>
-          requires (notBool (loc(Base, Offset) in locations(Mem)))
-               andBool (notBool (Offset in (keys(M))))
-               andBool (notBool isStaticDuration(loc(Base, Offset)))
-          [structural]
-     rule <k> readByte(loc(Base:SymBase, Offset:Int), T:Type)
-               => assert(Offset:Int <Int Len:Int, errorReadOutOfBounds)
-               ~> assert((notBool (Volatile in getQualsAtOffset(ObjT, Offset)))
-                    orBool isVolatileType(T),
-                    errorNonVolatileLVal)
-               ~> tv(piece(0, cfg:bitsPerByte), t(.Set, no-type))
-          ...</k>
-          <mem>...
-               Base |-> object(ObjT:Type, Len:Int,
-               M:Map => M[Offset <- piece(0, cfg:bitsPerByte)])
-          ...</mem>
-          <buffer> Mem:List </buffer>
-          requires (notBool (loc(Base, Offset) in locations(Mem)))
-               andBool (notBool (Offset in (keys(M))))
-               andBool (isStaticDuration(loc(Base, Offset))
-                    orBool isThreadDuration(loc(Base, Offset)))
-          [structural]
+     //rule <k> readByte(loc(Base:SymBase, Offset:Int), T:Type)
+     //          => assert(Offset:Int <Int Len:Int, errorReadOutOfBounds)
+     //          ~> assert((notBool (Volatile in getQualsAtOffset(ObjT, Offset)))
+     //               orBool isVolatileType(T),
+     //               errorNonVolatileLVal)
+     //          ~> tv(piece(trap, cfg:bitsPerByte), t(.Set, no-type))
+     //     ...</k>
+     //     <mem>...
+     //          Base |-> object(ObjT:Type, Len:Int,
+     //          M:Map => M[
+     //                Offset <- piece(trap, cfg:bitsPerByte)])
+     //     ...</mem>
+     //     <buffer> Mem:List </buffer>
+     //     requires (notBool (loc(Base, Offset) in locations(Mem)))
+     //          andBool (notBool (Offset in (keys(M))))
+     //          andBool (notBool isStaticDuration(loc(Base, Offset)))
+     //     [structural]
+     //rule <k> readByte(loc(Base:SymBase, Offset:Int), T:Type)
+     //          => assert(Offset:Int <Int Len:Int, errorReadOutOfBounds)
+     //          ~> assert((notBool (Volatile in getQualsAtOffset(ObjT, Offset)))
+     //               orBool isVolatileType(T),
+     //               errorNonVolatileLVal)
+     //          ~> tv(piece(0, cfg:bitsPerByte), t(.Set, no-type))
+     //     ...</k>
+     //     <mem>...
+     //          Base |-> object(ObjT:Type, Len:Int,
+     //          M:Map => M[Offset <- piece(0, cfg:bitsPerByte)])
+     //     ...</mem>
+     //     <buffer> Mem:List </buffer>
+     //     requires (notBool (loc(Base, Offset) in locations(Mem)))
+     //          andBool (notBool (Offset in (keys(M))))
+     //          andBool (isStaticDuration(loc(Base, Offset))
+     //               orBool isThreadDuration(loc(Base, Offset)))
+     //     [structural]
 
 
      syntax CValue ::= #readNativeByte(SymLoc, Int, Type) [function, hook(C-SEMANTICS:readNativeByte), impure]
