@@ -80,14 +80,14 @@ module C-IO-DIRECT
                Base |-> object(_, _, (_ Offset:Int |-> V:K))
           ...</mem>
           [structural]
-     //rule <k> readByte(loc(Base:SymBase, Offset:Int))
-     //          => tv(piece(0, cfg:bitsPerByte), t(.Set, no-type))
-     //     ...</k>
-     //     <mem>...
-     //          Base |-> object(_, _,
-     //               M:Map => M[Offset <- piece(0, cfg:bitsPerByte)])
-     //     ...</mem>
-     //     requires notBool (Offset in (keys(M)))
-     //     [structural]
+     rule <k> readByte(loc(Base:SymBase, Offset:Int))
+               => tv(piece(0, cfg:bitsPerByte), t(.Set, no-type))
+          ...</k>
+          <mem>...
+               Base |-> object(_, _,
+                    M:Map => M[Offset <- piece(0, cfg:bitsPerByte)])
+          ...</mem>
+          requires notBool (Offset in (keys(M)))
+          [structural]
 
 endmodule

@@ -72,7 +72,7 @@ module C-SYMBOLIC-VALUE
                    | #areSymbolic(List) [function]
 
      rule #isSymbolic(symVal) => true
-     //rule #isSymbolic(piece(symVal, _)) => true
+     rule #isSymbolic(piece(symVal, _)) => true
      rule #isSymbolic(agg(L:List)) => #areSymbolic(L)
      rule #isSymbolic(_) => false [owise]
 

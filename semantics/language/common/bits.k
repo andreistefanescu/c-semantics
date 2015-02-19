@@ -12,9 +12,10 @@ module C-BITS-SYNTAX
      syntax ObjectPart ::= subObject(SymLoc, Int, Int)
      syntax ExtendedMInt ::= ObjectPart
 
-     syntax Bits ::= ExtendedMInt
+     syntax BitsPiece ::= piece(Bits, Int)
+     syntax ExtendedMInt ::= BitsPiece
 
-     syntax Bits ::= piece(Bits, Int)
+     syntax Bits ::= ExtendedMInt
      syntax Bits ::= Bits "bit::" Bits
 
      // original number, from, to inclusive
