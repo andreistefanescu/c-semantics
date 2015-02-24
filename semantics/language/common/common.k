@@ -1,3 +1,5 @@
+require "builtins/mint.k"
+
 require "alignment.k"
 require "binding.k"
 require "bitsize.k"

@@ -88,7 +88,7 @@ module C-MEMORY-ALLOC
      rule <k> zeroObject(Base:SymBase) => .K ...</k>
           <mem>...
                Base |-> object(_, Len:Int,
-                    _ => createMap((0 to Len), piece(0, cfg:bitsPerByte)))
+                    _ => createMap((0 to Len), piece(mi(cfg:bitsPerByte, 0), cfg:bitsPerByte)))
           ...</mem>
           [structural]
 

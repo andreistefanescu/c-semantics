@@ -1,6 +1,7 @@
 module C-CONVERSION-SYNTAX
      imports C-DYNAMIC-SYNTAX
 
+     syntax Int ::= interpretMInt(MInt, Type)   [function]
      // interpret the result of arithmetic as in 6.5.4
      syntax KItem ::= arithInterpret(Type, NumValue) [function]
      syntax KItem ::= arithInterpretHold(Type, NumValue)
@@ -27,34 +28,39 @@ module C-CONVERSION
      imports DEBUG-SYNTAX
      imports COMPAT-SYNTAX
 
-     rule arithInterpret(T:Type, N:Int) => tv(N, T)
-          requires (min(T) <=Int N)
-               andBool (max(T) >=Int N)
-               andBool hasIntegerType(T)
-     rule arithInterpret(T:Type, unknown) => tv(unknown, T)
-     rule arithInterpret(T:Type, trap) => tv(trap, T)
-     // fixme
-     rule arithInterpret(T:Type, F:Float) => tv(F, T)
-          requires hasFloatType(T)
-     // signed arithmetic isn't supposed to overflow
-     rule arithInterpret(T:Type, N:Int) => tv(N %Int (max(T) +Int 1), T)
-          requires hasUnsignedIntegerType(T)
-               andBool (N >Int max(T))
-     rule arithInterpret(T:Type, N:Int)
-          => arithInterpret(T, (N %Int (max(T) +Int 1)) +Int (max(T) +Int 1))
-          // must be like this so ((unsigned int)(~((unsigned int)~0)) != 0)
-          // will work, but not sure why
-          requires hasUnsignedIntegerType(T)
-               andBool (N <Int min(T))
-     rule arithInterpret(T:Type, I:Int) => arithInterpretHold(T:Type, I:Int)
+     rule interpretMInt(I:MInt, T:Type) => svalueMInt(I)
           requires hasSignedIntegerType(T)
-               andBool notBool ((min(T) <=Int I) andBool (max(T) >=Int I))
+     rule interpretMInt(I:MInt, T:Type) => uvalueMInt(I)
+          requires hasUnsignedIntegerType(T)
 
-     rule (.K => UNSPEC("CCV1", "signed overflow.", "6.3.1.3:3"))
-          ~> arithInterpretHold(T:Type, I:Int)
-          requires hasSignedIntegerType(T)
-               andBool notBool ((min(T) <=Int I) andBool (max(T) >=Int I))
-          [structural]
+//     rule arithInterpret(T:Type, N:Int) => tv(N, T)
+//          requires (min(T) <=Int N)
+//               andBool (max(T) >=Int N)
+//               andBool hasIntegerType(T)
+//     rule arithInterpret(T:Type, unknown) => tv(unknown, T)
+//     rule arithInterpret(T:Type, trap) => tv(trap, T)
+//     // fixme
+//     rule arithInterpret(T:Type, F:Float) => tv(F, T)
+//          requires hasFloatType(T)
+//     // signed arithmetic isn't supposed to overflow
+//     rule arithInterpret(T:Type, N:Int) => tv(N %Int (max(T) +Int 1), T)
+//          requires hasUnsignedIntegerType(T)
+//               andBool (N >Int max(T))
+//     rule arithInterpret(T:Type, N:Int)
+//          => arithInterpret(T, (N %Int (max(T) +Int 1)) +Int (max(T) +Int 1))
+//          // must be like this so ((unsigned int)(~((unsigned int)~0)) != 0)
+//          // will work, but not sure why
+//          requires hasUnsignedIntegerType(T)
+//               andBool (N <Int min(T))
+//     rule arithInterpret(T:Type, I:Int) => arithInterpretHold(T:Type, I:Int)
+//          requires hasSignedIntegerType(T)
+//               andBool notBool ((min(T) <=Int I) andBool (max(T) >=Int I))
+//
+//     rule (.K => UNSPEC("CCV1", "signed overflow.", "6.3.1.3:3"))
+//          ~> arithInterpretHold(T:Type, I:Int)
+//          requires hasSignedIntegerType(T)
+//               andBool notBool ((min(T) <=Int I) andBool (max(T) >=Int I))
+//          [structural]
 
      rule cast(T':Type, tv(V:CValue, T:Type)) => tv(V, cast(T', T))
           requires stripQualifiers(T) ==K stripQualifiers(T')

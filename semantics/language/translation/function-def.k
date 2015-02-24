@@ -169,7 +169,7 @@ module C-FUNCTION-DEF
           => Blk ~> Return(NothingExpression)
           requires X =/=K Identifier("main")
      rule safeBody(Identifier("main"), Blk:K)
-          => Blk ~> Return(tv(0, t(.Set, int)))
+          => Blk ~> Return(tv(mi(bitSizeofType(int::Type), 1), t(.Set, int)))
 
      syntax KItem ::= "returnToFileScope"
 

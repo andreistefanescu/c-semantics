@@ -124,15 +124,15 @@ module C-MEMORY-READING
      rule joinFloatBytes(T:Type,
                ListItem(piece(encodedFloat(F:Float), NBits:Int)) L:List)
           => joinFloatBytes(T, F, NBits, L)
-     rule joinFloatBytes(T:Type,
-               ListItem(piece(0, NBits:Int)) L:List)
-          => joinFloatBytes(T, 0.0, NBits, L)
+     //rule joinFloatBytes(T:Type,
+     //          ListItem(piece(0, NBits:Int)) L:List)
+     //     => joinFloatBytes(T, 0.0, NBits, L)
      rule joinFloatBytes(T:Type, F:Float, Len:Int,
                ListItem(piece(encodedFloat(_), NBits:Int)) L:List)
           => joinFloatBytes(T, F, Len +Int NBits, L)
-     rule joinFloatBytes(T:Type, 0.0, Len:Int,
-               ListItem(piece(0, NBits:Int)) L:List)
-          => joinFloatBytes(T, 0.0, Len +Int NBits, L)
+     //rule joinFloatBytes(T:Type, 0.0, Len:Int,
+     //          ListItem(piece(0, NBits:Int)) L:List)
+     //     => joinFloatBytes(T, 0.0, Len +Int NBits, L)
      rule joinFloatBytes(T:Type, F:Float, Len:Int, .List)
           => tv(F, stripQualifiers(T))
           requires Len ==Int bitSizeofType(T)
@@ -150,27 +150,27 @@ module C-MEMORY-READING
                andBool (SNatEnd ==Int End +Int 1)
      rule joinPointerBytes-aux(T:Type, .List, subObject(Loc:SymLoc, 0, _))
           => tv(Loc, stripQualifiers(T))
-     rule joinPointerBytes-aux(T:Type,
-               ListItem(piece(0, Len:Int)) L:List, 0)
-          => joinPointerBytes-aux(T, L, 0)
-          requires (Len ==Int cfg:bitsPerByte)
+     //rule joinPointerBytes-aux(T:Type,
+     //          ListItem(piece(0, Len:Int)) L:List, 0)
+     //     => joinPointerBytes-aux(T, L, 0)
+     //     requires (Len ==Int cfg:bitsPerByte)
      rule joinPointerBytes-aux(T:Type, .List, 0)
           => tv(NullPointer, stripQualifiers(T))
 
      syntax RValue ::= joinIntegerBytes(Type, List) [function]
      syntax RValue ::= "joinIntegerBytes-aux" "(" Type "," List "," K ")" [function]
-     rule joinIntegerBytes(T:Type, L:List)
-          => joinIntegerBytes-aux(T, L, piece(0, 0))
-     rule joinIntegerBytes-aux(T:Type,
-               ListItem(piece(subObject(Loc:SymLoc, Start:Int, End:Int), _)), piece(0, 0))
-          => tv(subObject(Loc, Start, End), stripQualifiers(T))
-          requires isUCharType(T)
-     rule joinIntegerBytes-aux(T:Type,
-               L:List ListItem(piece(N:Int, Len:Int)), piece(N':Int, Len':Int))
-          => joinIntegerBytes-aux(T,
-               L, piece(piece(N', Len') bit:: piece(N, Len), Len +Int Len'))
-     rule joinIntegerBytes-aux(T:Type, .List, piece(N:Int, Len:Int))
-          => interpret(stripQualifiers(T), piece(N, Len))
+     //rule joinIntegerBytes(T:Type, L:List)
+     //     => joinIntegerBytes-aux(T, L, piece(0, 0))
+     //rule joinIntegerBytes-aux(T:Type,
+     //          ListItem(piece(subObject(Loc:SymLoc, Start:Int, End:Int), _)), piece(0, 0))
+     //     => tv(subObject(Loc, Start, End), stripQualifiers(T))
+     //     requires isUCharType(T)
+     //rule joinIntegerBytes-aux(T:Type,
+     //          L:List ListItem(piece(N:Int, Len:Int)), piece(N':Int, Len':Int))
+     //     => joinIntegerBytes-aux(T,
+     //          L, piece(piece(N', Len') bit:: piece(N, Len), Len +Int Len'))
+     //rule joinIntegerBytes-aux(T:Type, .List, piece(N:Int, Len:Int))
+     //     => interpret(stripQualifiers(T), piece(N, Len))
 
      // fixme not sure about this
      // interpret is used to "cast" values read from memory
@@ -179,7 +179,7 @@ module C-MEMORY-READING
      // interpret the values of reading from mem
      syntax RValue ::= interpret(Type, K) [function]
      syntax RValue ::= "interpret-aux" "(" Type "," K ")" [function]
-     rule interpret(T:Type, piece(N:Int, _)) => interpret-aux(T, N)
+     //rule interpret(T:Type, piece(N:Int, _)) => interpret-aux(T, N)
      rule interpret-aux(T:Type, I:Int) => tv(I, stripQualifiers(T))
           requires (min(T) <=Int I)
                andBool (max(T) >=Int I)

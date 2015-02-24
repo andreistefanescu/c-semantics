@@ -14,7 +14,8 @@ module C-TYPING-MISC
 
      rule simpleType(t(_, T:SimpleType)) => T
 
-     rule simplifyTruth(V:K) => V != tv(0, t(SetItem(IntegerConstant), int))
+     rule simplifyTruth(V:K)
+       => V != tv(mi(bitSizeofType(int::Type)), t(SetItem(IntegerConstant), int))
 
      rule char => cfg:charAlias
 

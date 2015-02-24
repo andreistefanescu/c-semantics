@@ -157,14 +157,14 @@ module C-MEMORY-WRITING
                andBool (I <Int 0)
           [structural]
 
-     rule write-specific(Loc:SymLoc, V:Int, T:Type)
-          => writeBytes(stripProv(Loc),
-               calculateNewBytes(piece(V, bitSizeofType(T)),
-                    readBytes(stripProv(Loc), byteSizeofType(T), T)), T)
-          requires (bitSizeofType(T) %Int cfg:bitsPerByte =/=Int 0)
-               orBool (isBitfieldType(T) andBool notBool hasUnionMarker(Loc))
-               andBool (V >=Int 0)
-          [structural]
+     //rule write-specific(Loc:SymLoc, V:Int, T:Type)
+     //     => writeBytes(stripProv(Loc),
+     //          calculateNewBytes(piece(V, bitSizeofType(T)),
+     //               readBytes(stripProv(Loc), byteSizeofType(T), T)), T)
+     //     requires (bitSizeofType(T) %Int cfg:bitsPerByte =/=Int 0)
+     //          orBool (isBitfieldType(T) andBool notBool hasUnionMarker(Loc))
+     //          andBool (V >=Int 0)
+     //     [structural]
 
      syntax KItem ::= calculateNewBytes(Bits, K)
           [latex(\terminal{calcNewBytes(}{#1}, {#2}\terminal{)}), strict(2)]
@@ -322,10 +322,10 @@ module C-MEMORY-WRITING
 
      syntax Bits ::= lowestByte(Int, Type) [function]
 
-     rule lowestByte(I:Int, T:Type)
-          => piece(I &Int byteMaskSet, cfg:bitsPerByte)
-          requires hasIntegerType(T)
-          [structural]
+     //rule lowestByte(I:Int, T:Type)
+     //     => piece(I &Int byteMaskSet, cfg:bitsPerByte)
+     //     requires hasIntegerType(T)
+     //     [structural]
 
      syntax Int ::= "byteMaskSet" [function]
 

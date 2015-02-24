@@ -78,18 +78,18 @@ module C-COMMON-EXPR-ADDITIVE
      operator that is evaluated.
      }*/
 
-     rule tv(Loc:SymLoc, T':Type) + tv(I:Int, T:Type)
-          => addToPointer(Loc, T', I)
+     rule tv(Loc:SymLoc, T':Type) + tv(I:MInt, T:Type)
+          => addToPointer(Loc, T', interpretMInt(I, T))
           requires hasIntegerType(T) andBool isPointerType(T')
                andBool simpleType(innerType(T')) =/=K void
           [structural]
-     rule tv(I:Int, T:Type) + tv(Loc:SymLoc, T':Type)
-          => addToPointer(Loc, T', I)
+     rule tv(I:MInt, T:Type) + tv(Loc:SymLoc, T':Type)
+          => addToPointer(Loc, T', interpretMInt(I, T))
           requires hasIntegerType(T) andBool isPointerType(T')
                andBool simpleType(innerType(T')) =/=K void
           [structural]
-     rule tv(Loc:SymLoc, T':Type) - tv(I:Int, T:Type)
-          => addToPointer(Loc, T', 0 -Int I)
+     rule tv(Loc:SymLoc, T':Type) - tv(I:MInt, T:Type)
+          => addToPointer(Loc, T', 0 -Int interpretMInt(I, T))
           requires hasIntegerType(T) andBool isPointerType(T')
                andBool simpleType(innerType(T')) =/=K void
           [structural]
@@ -180,7 +180,8 @@ module C-COMMON-EXPR-ADDITIVE
      // ptr1, ptr2, size of ptr type
      syntax KItem ::= computePointerDifference(Int, Int)
      rule computePointerDifference(Diff:Int, Size:Int)
-          => tv(Diff /Int Size, t(.Set, cfg:ptrdiffut))
+          => tv(mi(byteSizeofType(t(.Set, cfg:ptrdiffut)), Diff /Int Size),
+                t(.Set, cfg:ptrdiffut))
           requires (Diff %Int Size ==Int 0)
                andBool (Diff /Int Size) <=Int max(t(.Set, cfg:ptrdiffut))
                andBool (Diff /Int Size) >=Int min(t(.Set, cfg:ptrdiffut))
@@ -192,21 +193,58 @@ module C-COMMON-EXPR-ADDITIVE
                orBool (Diff /Int Size) <Int min(t(.Set, cfg:ptrdiffut))
           [structural]
 
-     rule tv(I1:Int, T:Type) + tv(I2:Int, T':Type)
-          => arithInterpret(T, (I1 +Int I2))
-          requires isPromoted(T) andBool T ==Type T'
+
+     rule tv(I1:MInt, T:Type) + tv(I2:MInt, T':Type)
+          => tv(addMInt(I1, I2), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasUnsignedIntegerType(T)
           [structural]
-     rule tv(I1:Int, T:Type) - tv(I2:Int, T':Type)
-          => arithInterpret(T, (I1 -Int I2))
-          requires isPromoted(T) andBool T ==Type T'
+     rule tv(I1:MInt, T:Type) + tv(I2:MInt, T':Type)
+          => tv(miMInt(saddMInt(I1, I2)), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool overflowMInt(saddMInt(I1, I2))
           [structural]
+     rule (.K => UNSPEC("CEA6", "signed overflow.", "6.3.1.3:3"))
+          ~> tv(I1:MInt, T:Type) + tv(I2:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool overflowMInt(saddMInt(I1, I2))
+          [structural]
+
+     rule tv(I1:MInt, T:Type) - tv(I2:MInt, T':Type)
+          => tv(subMInt(I1, I2), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasUnsignedIntegerType(T)
+          [structural]
+     rule tv(I1:MInt, T:Type) - tv(I2:MInt, T':Type)
+          => tv(miMInt(ssubMInt(I1, I2)), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool overflowMInt(ssubMInt(I1, I2))
+          [structural]
+     rule (.K => UNSPEC("CEA7", "signed overflow.", "6.3.1.3:3"))
+          ~> tv(I1:MInt, T:Type) - tv(I2:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool overflowMInt(ssubMInt(I1, I2))
+          [structural]
+
      rule tv(F1:Float, T:Type) + tv(F2:Float, T':Type)
-          => arithInterpret(T, F1 +Float F2)
+          => tv(F1 +Float F2, T)
           requires T ==Type T'
+               andBool hasFloatType(T)
           [structural]
      rule tv(F1:Float, T:Type) - tv(F2:Float, T':Type)
-          => arithInterpret(T, (F1 -Float F2))
+          => tv(F1 -Float F2, T)
           requires T ==Type T'
+               andBool hasFloatType(T)
           [structural]
 
      rule tv(_, T:Type) + tv(unknown, T:Type)
@@ -218,15 +256,15 @@ module C-COMMON-EXPR-ADDITIVE
           requires isPromoted(T) andBool hasUnsignedIntegerType(T)
           [structural]
 
-     rule (.K => UNSPEC("CEA6", "Unspecified value in signed addition, possible overflow.",
+     rule (.K => UNSPEC("CEA8", "Unspecified value in signed addition, possible overflow.",
                "6.3.1.3:3"))
           ~> tv(_, T:Type) + tv(unknown, T:Type)
           requires isPromoted(T) andBool hasSignedIntegerType(T)
           [structural]
-     rule (.K => UNSPEC("CEA6", "Unspecified value in signed addition, possible overflow.",
+     rule (.K => UNSPEC("CEA9", "Unspecified value in signed addition, possible overflow.",
                "6.3.1.3:3"))
           ~> tv(unknown, T:Type) + tv(_, T:Type)
           requires isPromoted(T) andBool hasSignedIntegerType(T)
           [structural]
-
 endmodule
+

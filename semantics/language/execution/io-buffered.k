@@ -270,11 +270,11 @@ module C-IO-BUFFERED
                ~> assert((notBool (Volatile in getQualsAtOffset(ObjT, Offset)))
                     orBool isVolatileType(T),
                     errorNonVolatileLVal)
-               ~> tv(piece(0, cfg:bitsPerByte), t(.Set, no-type))
+               ~> tv(piece(mi(cfg:bitsPerByte, 0), cfg:bitsPerByte), t(.Set, no-type))
           ...</k>
           <mem>...
                Base |-> object(ObjT:Type, Len:Int,
-               M:Map => M[Offset <- piece(0, cfg:bitsPerByte)])
+               M:Map => M[Offset <- piece(mi(cfg:bitsPerByte, 0), cfg:bitsPerByte)])
           ...</mem>
           <buffer> Mem:List </buffer>
           requires (notBool (loc(Base, Offset) in locations(Mem)))

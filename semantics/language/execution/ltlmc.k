@@ -197,8 +197,8 @@ module C-LTLMC
           Bytes:List)
           => joinBytes(T, dataList(Bytes))
 
-     rule joinBytes(T:Type, dataList(L:List))
-          => joinBytes'(T, L, ListItem(piece(0, 0)))
+     //rule joinBytes(T:Type, dataList(L:List))
+     //     => joinBytes'(T, L, ListItem(piece(0, 0)))
 
      rule joinBytes(t(_, pointerType(T:Type)),
                dataList(ListItem(piece(subObject(L:SymLoc, _, _), _)) _:List))
@@ -211,13 +211,13 @@ module C-LTLMC
           => joinBytes'(T, V, .List)
           requires hasIntegerType(T:Type)
 
-     rule joinBytes'(T:Type,
-               L:List ListItem(piece(N:Int, Len:Int)),
-               ListItem(piece(N':Int, Len':Int)))
-          => joinBytes'(T, L, ListItem(piece(
-               piece(N', Len') bit:: piece(N, Len), Len +Int Len')))
+     //rule joinBytes'(T:Type,
+     //          L:List ListItem(piece(N:Int, Len:Int)),
+     //          ListItem(piece(N':Int, Len':Int)))
+     //     => joinBytes'(T, L, ListItem(piece(
+     //          piece(N', Len') bit:: piece(N, Len), Len +Int Len')))
 
-     rule joinBytes'(_, .List, ListItem(piece(N:Int, _))) => N
+     //rule joinBytes'(_, .List, ListItem(piece(N:Int, _))) => N
 
      // Not so interested in l-values.
      syntax ValueProp ::= ltlLVal(Bag, CId) [function]

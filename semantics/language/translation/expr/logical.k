@@ -6,9 +6,11 @@ module C-EXPR-LOGICAL
      imports C-STMT-IF-THEN-SYNTAX
 
      context _ && (HOLE => reval(HOLE)) [result(RValue)]
-     rule tv(0, t(_, int)) && _:KResult => tv(0, t(.Set, int))
+     rule tv(I:MInt, t(_, int)) && _:KResult => tv(I, t(.Set, int))
+          requires uvalueMInt(I) ==K 0
           [structural]
-     rule tv(1, t(_, int)) && V:KResult => simplifyTruth(V)
+     rule tv(I:MInt, t(_, int)) && V:KResult => simplifyTruth(V)
+          requires uvalueMInt(I) ==K 1
           [structural]
      rule tv(symVal, t(_, int)) && _:KResult => tv(symVal, t(.Set, int))
           [structural]
@@ -17,9 +19,11 @@ module C-EXPR-LOGICAL
           [structural]
 
      context _ || (HOLE => reval(HOLE)) [result(RValue)]
-     rule tv(0, t(_, int)) || V:KResult => V
+     rule tv(I:MInt, t(_, int)) || V:KResult => V
+          requires uvalueMInt(I) ==K 0
           [structural]
-     rule tv(1, t(_, int)) || _:KResult => tv(1, t(.Set, int))
+     rule tv(I:MInt, t(_, int)) || _:KResult => tv(I, t(.Set, int))
+          requires uvalueMInt(I) ==K 1
           [structural]
      rule tv(symVal, t(_, int)) || _:KResult => tv(symVal, t(.Set, int))
           [structural]

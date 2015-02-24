@@ -11,7 +11,7 @@ module C-STMT-IF-THEN
      imports C-SYMBOLIC-VALUE-SYNTAX
 
      rule isTruthValue(tv(V:CValue, t(_, T:SimpleType)))
-          => T ==K int andBool (V ==K 0 orBool V ==K 1 orBool V ==K symVal)
+          => T ==K int andBool (V ==K mi(bitSizeofType(int::Type), 0) orBool V ==K mi(bitSizeofType(int::Type), 0) orBool V ==K symVal)
 
      rule IfThenElse((V:RValue => simplifyTruth(V)), _, _)
           requires notBool isTruthValue(V)
@@ -19,11 +19,13 @@ module C-STMT-IF-THEN
 
      // IfThenElse might also be handling the ternary operator (?:) and so
      // needing to return a value.
-     rule IfThenElse(tv(0, t(_, int)), S1:K, S2:K)
+     rule IfThenElse(tv(I:MInt, t(_, int)), S1:K, S2:K)
           => S1 ~> discard ~> S2
+          requires uvalueMInt(I) ==K 0
           [structural]
-     rule IfThenElse(tv(1, t(_, int)), S1:K, S2:K)
+     rule IfThenElse(tv(I:MInt, t(_, int)), S1:K, S2:K)
           => S2 ~> discard ~> S1
+          requires uvalueMInt(I) ==K 1
           [structural]
 
      // Things get a bit ugly in this case. We only want to return a value if

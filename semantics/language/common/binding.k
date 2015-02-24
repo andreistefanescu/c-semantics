@@ -134,13 +134,13 @@ module C-BINDING
      rule #arePromotedTypesCompat(_, T:Type, T':Type) => true
           requires areCompatible(argPromoteType(T), argPromoteType(T'))
 
-     rule #arePromotedTypesCompat(V:Int, T:Type, T':Type) => true
+     rule #arePromotedTypesCompat(V:MInt, T:Type, T':Type) => true
           requires (argPromoteType(T)
                     ==K correspondingUnsignedType(argPromoteType(T')))
                andBool representable(V, argPromoteType(T))
                andBool representable(V,
                     correspondingUnsignedType(argPromoteType(T')))
-     rule #arePromotedTypesCompat(V:Int, T:Type, T':Type) => true
+     rule #arePromotedTypesCompat(V:MInt, T:Type, T':Type) => true
           requires (argPromoteType(T')
                     ==K correspondingUnsignedType(argPromoteType(T)))
                andBool representable(V, argPromoteType(T'))
@@ -154,8 +154,8 @@ module C-BINDING
                     orBool isVoidType(innerType(argPromoteType(T'))))
      rule #arePromotedTypesCompat(_, _, _) => false [owise]
 
-     syntax Bool ::= representable(Int, Type)  [function]
-     rule representable(V:Int, T:Type)
+     syntax Bool ::= representable(MInt, Type)  [function]
+     rule representable(V:MInt, T:Type)
           => (V <=Int max(T)) andBool (V >=Int min(T))
 
      syntax RValue ::= argPromote(K) [function]

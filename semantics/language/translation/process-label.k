@@ -167,7 +167,7 @@ module C-PROCESS-LABEL
                          ~> For(ForNum, Pre, (
                               #if Control =/=K emptyValue
                               #then Control
-                              #else tv(1, t(.Set, int))
+                              #else tv(mi(bitSizeofType(int::Type), 1), t(.Set, int))
                               #fi), Post, S)
                          ~> popLoop
                          ~> K

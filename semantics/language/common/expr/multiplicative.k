@@ -26,53 +26,101 @@ module C-COMMON-EXPR-MULTIPLICATIVE
      \cinline{a\%b} is undefined.
      }*/
 
-     rule tv(I1:Int, T:Type) * tv(I2:Int, T':Type)
-          => arithInterpret(T, I1 *Int I2)
+     rule tv(I1:MInt, T:Type) * tv(I2:MInt, T':Type)
+          => tv(mulMInt(I1, I2), T)
           requires isPromoted(T)
                andBool T ==Type T'
+               andBool hasUnsignedIntegerType(T)
           [structural]
+     rule tv(I1:MInt, T:Type) * tv(I2:MInt, T':Type)
+          => tv(miMInt(smulMInt(I1, I2)), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool overflowMInt(smulMInt(I1, I2))
+          [structural]
+     rule (.K => UNSPEC("CEM1", "signed overflow.", "6.3.1.3:3"))
+          ~> tv(I1:MInt, T:Type) * tv(I2:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool overflowMInt(smulMInt(I1, I2))
+          [structural]
+
      rule tv(F1:Float, T:Type) * tv(F2:Float, T':Type)
-          => arithInterpret(T, F1 *Float F2)
+          => tv(F1 *Float F2, T)
           requires T ==Type T'
+               andBool hasFloatType(T)
           [structural]
 
-     rule tv(I1:Int, T:Type) / tv(I2:Int, T':Type)
-          => arithInterpret(T, I1 /Int I2)
-          requires isPromoted(T:Type) andBool I2 =/=Int 0
-               andBool T ==Type T'
-          [structural]
-     rule tv(F1:Float, T:Type) / tv(F2:Float, T':Type)
-          => arithInterpret(T, F1 /Float F2)
-          requires T ==Type T'
-          [structural]
-     rule (.K => UNDEF("CEM1", "Division by 0.", "6.5.5:5") )
-          ~> tv(_, T:Type) / tv(0, T':Type)
-          requires hasIntegerType(T) andBool isPromoted(T)
-               andBool T ==Type T'
-          [structural]
 
-     rule tv(I1:Int, T:Type) % tv(I2:Int, T':Type)
-          => arithInterpret(T, I1 %Int I2)
+     rule tv(I1:MInt, T:Type) / tv(I2:MInt, T':Type)
+          => tv(udivMInt(I1, I2), T)
           requires isPromoted(T)
-               andBool (min(T) <=Int I1 /Int I2)
-               andBool (max(T) >=Int I1 /Int I2)
-               andBool (I2 =/=Int 0)
                andBool T ==Type T'
+               andBool hasUnsignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
           [structural]
-     rule (.K => UNDEF("CEM2", "Modulus by 0.", "6.5.5:5") )
-          ~> tv(_, T:Type) % tv(0, T':Type)
-          requires hasIntegerType(T) andBool isPromoted(T)
+     rule tv(I1:MInt, T:Type) / tv(I2:MInt, T':Type)
+          => tv(miMInt(sdivMInt(I1, I2)), T)
+          requires isPromoted(T)
                andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
+               andBool notBool overflowMInt(sdivMInt(I1, I2))
           [structural]
-     rule (.K => UNSPEC("CEM3", "Signed overflow.", "6.3.1.3:3") ) ~>
-          tv(I1:Int, T:Type) % tv(I2:Int, T':Type)
-          requires hasIntegerType(T)
-               andBool notBool (min(T) <=Int I1 /Int I2
-                    andBool max(T) >=Int I1 /Int I2)
-               andBool isPromoted(T)
-               andBool I2 =/=Int 0
+     rule (.K => UNSPEC("CEM2", "signed overflow.", "6.3.1.3:3"))
+          ~> tv(I1:MInt, T:Type) / tv(I2:MInt, T':Type)
+          requires isPromoted(T)
                andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
+               andBool overflowMInt(sdivMInt(I1, I2))
+          [structural]
+     rule (.K => UNDEF("CEM3", "Division by 0.", "6.5.5:5") )
+          ~> tv(_:MInt, T:Type) / tv(I:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasIntegerType(T)
+               andBool zeroMInt(I)
           [structural]
 
+     rule tv(F1:Float, T:Type) / tv(F2:Float, T':Type)
+          => tv(F1 /Float F2, T)
+          requires T ==Type T'
+               andBool hasFloatType(T)
+          [structural]
+
+
+     rule tv(I1:MInt, T:Type) % tv(I2:MInt, T':Type)
+          => tv(uremMInt(I1, I2), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasUnsignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
+          [structural]
+     rule tv(I1:MInt, T:Type) % tv(I2:MInt, T':Type)
+          => tv(miMInt(sremMInt(I1, I2)), T)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
+               andBool notBool overflowMInt(sremMInt(I1, I2))
+          [structural]
+     rule (.K => UNSPEC("CEM4", "signed overflow.", "6.3.1.3:3"))
+          ~> tv(I1:MInt, T:Type) % tv(I2:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasSignedIntegerType(T)
+               andBool notBool zeroMInt(I2)
+               andBool overflowMInt(sremMInt(I1, I2))
+          [structural]
+     rule (.K => UNDEF("CEM5", "Modulus by 0.", "6.5.5:5") )
+          ~> tv(_:MInt, T:Type) % tv(I:MInt, T':Type)
+          requires isPromoted(T)
+               andBool T ==Type T'
+               andBool hasIntegerType(T)
+               andBool zeroMInt(I)
+          [structural]
 endmodule
 

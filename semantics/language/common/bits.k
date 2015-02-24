@@ -1,7 +1,8 @@
 module C-BITS-SYNTAX
+     imports MINT 
      imports C-SYMLOC-SYNTAX
 
-     syntax ExtendedMInt ::= Int
+     syntax ExtendedMInt ::= MInt
 
      syntax Trap ::= "trap"
      syntax Unknown ::= "unknown"
@@ -50,7 +51,7 @@ module C-BITS
 
      rule fillToBytes-aux(dataList(ListItem(piece(N:Bits, Len:Int))), L':List)
           => fillToBytes-aux(dataList(
-               ListItem(piece(0, 1)) ListItem(piece(N, Len))),
+               ListItem(piece(mi(1, 0), 1)) ListItem(piece(N, Len))),
                L')
           requires Len <Int cfg:bitsPerByte
           [structural]
@@ -80,8 +81,8 @@ module C-BITS
      rule piece(N'':Bits, Len':Int) bit:: piece(N:Bits bit:: N':Bits, Len:Int)
           => piece((piece(N'', Len') bit:: N) bit:: N', Len +Int Len')
           [structural, anywhere]
-     rule piece(0, 0) bit:: N:Bits => N
-          [structural, anywhere]
+     //rule piece(0, 0) bit:: N:Bits => N
+     //     [structural, anywhere]
      rule piece(piece(N:Bits, Len:Int), Len:Int) => piece(N, Len)
           [structural, anywhere]
 
@@ -100,12 +101,12 @@ module C-BITS
           requires Start +Int Len ==Int End +Int 1
           [structural, anywhere]
 
-     rule bitRange(N:Int, Pos:Int, Pos:Int) => 1 &Int (N >>Int Pos)
-          requires N >=Int 0
-          [structural, anywhere]
-     rule bitRange(piece(N:Int, 1), Pos:Int, Pos:Int) => 1 &Int (N >>Int Pos)
-          requires N >=Int 0
-          [structural, anywhere]
+     //rule bitRange(N:Int, Pos:Int, Pos:Int) => 1 &Int (N >>Int Pos)
+     //     requires N >=Int 0
+     //     [structural, anywhere]
+     //rule bitRange(piece(N:Int, 1), Pos:Int, Pos:Int) => 1 &Int (N >>Int Pos)
+     //     requires N >=Int 0
+     //     [structural, anywhere]
 
      rule bitRange(N:Bits, 0, To:Int) => N
           requires To +Int 1 ==Int cfg:bitsPerByte
@@ -125,13 +126,13 @@ module C-BITS
           requires SuccEnd ==Int End +Int 1
           [structural, anywhere]
 
-     rule bitRange(piece(N:Int, _), Pos:Int, Pos:Int)
-          => (N >>Int Pos) &Int 1
-          requires N >=Int 0
-          [structural, anywhere]
+     //rule bitRange(piece(N:Int, _), Pos:Int, Pos:Int)
+     //     => (N >>Int Pos) &Int 1
+     //     requires N >=Int 0
+     //     [structural, anywhere]
 
-     rule piece(N:Int, Len:Int) bit:: piece(N':Int, Len':Int)
-          => piece((N <<Int Len') |Int N', Len +Int Len')
-          [structural, anywhere]
+     //rule piece(N:Int, Len:Int) bit:: piece(N':Int, Len':Int)
+     //     => piece((N <<Int Len') |Int N', Len +Int Len')
+     //     [structural, anywhere]
 
 endmodule

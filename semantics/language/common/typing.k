@@ -65,7 +65,6 @@ module C-TYPING-SYNTAX
      syntax Set ::= "storageSpecifiers" [function]
 
      syntax CSize ::= Int
-     syntax CValue ::= CSize
 
      // Composite types
      syntax SimpleType ::= enumType(CId)
