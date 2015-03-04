@@ -8,9 +8,9 @@ module C-COMMON-EXPR-RELATIONAL
      imports C-SYNTAX
      imports C-TYPING-SYNTAX
 
-     syntax KItem ::= makeTruth(Bool) [function]
-     rule makeTruth(B:Bool)
-          => #if B #then tv(1, t(.Set, int)) #else tv(0, t(.Set, int)) #fi
+     syntax KItem ::= makeTruth(Bool)
+     rule makeTruth( true) => tv(1, t(.Set, int))
+     rule makeTruth(false) => tv(0, t(.Set, int))
 
      /*@ \fromStandard{\source[n1570]{\para{6.5.8}{3}}}{
      If both of the operands have arithmetic type, the usual arithmetic

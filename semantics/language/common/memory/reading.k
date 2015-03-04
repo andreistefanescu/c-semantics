@@ -157,8 +157,8 @@ module C-MEMORY-READING
      rule joinPointerBytes-aux(T:Type, .List, 0)
           => tv(NullPointer, stripQualifiers(T))
 
-     syntax RValue ::= joinIntegerBytes(Type, List) [function]
-     syntax RValue ::= "joinIntegerBytes-aux" "(" Type "," List "," K ")" [function]
+     syntax KItem ::= joinIntegerBytes(Type, List) [function]
+     syntax KItem ::= "joinIntegerBytes-aux" "(" Type "," List "," K ")" [function]
      rule joinIntegerBytes(T:Type, L:List)
           => joinIntegerBytes-aux(T, L, piece(0, 0))
      rule joinIntegerBytes-aux(T:Type,
@@ -170,28 +170,26 @@ module C-MEMORY-READING
           => joinIntegerBytes-aux(T,
                L, piece(piece(N', Len') bit:: piece(N, Len), Len +Int Len'))
      rule joinIntegerBytes-aux(T:Type, .List, piece(N:Int, Len:Int))
-          => interpret(stripQualifiers(T), piece(N, Len))
+          => interpretInt(stripQualifiers(T), N)
 
      // fixme not sure about this
      // interpret is used to "cast" values read from memory
      // shouldn't need to do the < min one since values start positive
 
-     // interpret the values of reading from mem
-     syntax RValue ::= interpret(Type, K) [function]
-     syntax RValue ::= "interpret-aux" "(" Type "," K ")" [function]
-     rule interpret(T:Type, piece(N:Int, _)) => interpret-aux(T, N)
-     rule interpret-aux(T:Type, I:Int) => tv(I, stripQualifiers(T))
-          requires (min(T) <=Int I)
-               andBool (max(T) >=Int I)
-               andBool hasIntegerType(T)
-     rule interpret-aux(T:Type, I:Int)
-          => interpret-aux(T, I:Int -Int (2 ^Int absInt(bitSizeofType(T))))
-          requires (I:Int >Int max(T))
-               andBool hasIntegerType(T)
-     rule interpret-aux(T:Type, I:Int)
-          => interpret-aux(T, I:Int +Int (2 ^Int absInt(bitSizeofType(T))))
-          requires (I:Int <Int min(T))
-               andBool hasIntegerType(T)
+     // interpret an (integer) value read from <mem>
+     syntax KItem ::= interpretInt(Type, Int)
+     rule interpretInt(T:Type, I:Int) => tv(I, T)
+          requires hasIntegerType(T)
+               andBool min(T) <=Int I
+               andBool I <=Int max(T)
+     rule interpretInt(T:Type, I:Int)
+          => interpretInt(T, I:Int +Int (2 ^Int absInt(bitSizeofType(T))))
+          requires hasIntegerType(T)
+               andBool notBool min(T) <=Int I
+     rule interpretInt(T:Type, I:Int)
+          => interpretInt(T, I:Int -Int (2 ^Int absInt(bitSizeofType(T))))
+          requires hasIntegerType(T)
+               andBool notBool I <=Int max(T)
 
      // loc, size in bits
      syntax KItem ::= extractBitsFromMem(SymLoc, Type)

@@ -541,8 +541,6 @@ module C-SYNTAX
 
      context (HOLE => reval(HOLE)) || _ [ndheat, result(RValue)]
 
-     context (HOLE => reval(HOLE)) ? _ : _ [result(RValue)]
-
      context HOLE *= _
      context _ *= (HOLE => reval(HOLE)) [result(RValue)]
 

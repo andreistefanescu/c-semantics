@@ -153,12 +153,6 @@ module C-IO-BUFFERED
           [structural]
 
      rule <k> writeByte(loc(Base:SymBase, Offset:Int), V:CValue) => .K ...</k>
-          <buffer>... (.List => ListItem(bwrite(loc(Base, Offset), V))) </buffer>
-          [structural]
-
-     rule <buffer>
-               (ListItem(bwrite(loc(Base:SymBase, Offset:Int), V:K)) => .List)
-          ...</buffer>
           <mem>...
                Base |-> object(_, Len:Int, M:Map => M[Offset <- V])
           ...</mem>
@@ -166,10 +160,6 @@ module C-IO-BUFFERED
           [structural]
 
      syntax List ::= #writeNativeByte(SymLoc, K) [function, hook(C-SEMANTICS:writeNativeByte), impure]
-     rule <buffer>
-               ListItem(bwrite(Loc:SymLoc, V:K)) => #writeNativeByte(Loc, V)
-          ...</buffer>
-          requires isNativeLoc(Loc)
 
      syntax Set ::= locations(List) [function]
      rule locations(.List) => .Set
