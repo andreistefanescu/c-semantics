@@ -49,6 +49,16 @@ module C-COMPOUND-LITERAL
           [structural]
 
      rule <k> handleCompoundLiteral(initValue(X:CId, T:Type, Init:K))
+               => handleCompoundLiteralHelper(initValue(X, T, Init), lfresh(D))
+          ...</k>
+          <compound-lit-map> M:Map </compound-lit-map>
+          <duration> D:Duration </duration>
+          requires notBool (X in keys(M))
+          [structural]
+     syntax KItem ::= handleCompoundLiteralHelper(K, SymBase)
+     rule <k> handleCompoundLiteralHelper(
+                    initValue(X:CId, T:Type, Init:K),
+                    Base:SymBase)
                => allocObject(Base, T)
                ~> addToEnv(X, Base)
                ~> giveType(X, T)
@@ -57,10 +67,7 @@ module C-COMPOUND-LITERAL
                ~> X
           ...</k>
           <compound-lit-map> M:Map => M[X <- Base] </compound-lit-map>
-          <next-loc> Base:SymBase => linc(Base) </next-loc>
-          requires notBool (X in keys(M))
           [structural]
-
      // This and the compound-lit-map is apparently needed to properly handle
      // gotos. An instance (i.e., syntactic occurance) of a compound literal
      // apparently must always refer to the same object, even if it is
